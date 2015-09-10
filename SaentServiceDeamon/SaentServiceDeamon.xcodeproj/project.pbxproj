@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		454ED1991B8F024800F224DC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 454ED1981B8F024800F224DC /* AppDelegate.m */; };
+		454ED19B1B8F024800F224DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 454ED19A1B8F024800F224DC /* main.m */; };
+		454ED19D1B8F024800F224DC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 454ED19C1B8F024800F224DC /* Images.xcassets */; };
+		454ED1A01B8F024800F224DC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 454ED19E1B8F024800F224DC /* MainMenu.xib */; };
+		454ED1AC1B8F024900F224DC /* SaentServiceDeamonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 454ED1AB1B8F024900F224DC /* SaentServiceDeamonTests.m */; };
+		454ED1C91B8F0F4E00F224DC /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454ED1C81B8F0F4E00F224DC /* CoreData.framework */; };
+		454ED1CB1B8F0F5E00F224DC /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454ED1CA1B8F0F5E00F224DC /* AppKit.framework */; };
+		454ED1CD1B8F0F9300F224DC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454ED1CC1B8F0F9300F224DC /* Foundation.framework */; };
+		455017D61B8FEE7E00DEF975 /* CentralClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 455017D51B8FEE7E00DEF975 /* CentralClient.m */; };
+		45536D421B9E7405005EE7A2 /* Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = 45536D411B9E7405005EE7A2 /* Frame.m */; };
+		4578D3BE1B94A39E00D7C4DF /* SocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4578D3BD1B94A39E00D7C4DF /* SocketServer.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		454ED1A61B8F024800F224DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 454ED18A1B8F024800F224DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 454ED1911B8F024800F224DC;
+			remoteInfo = SaentServiceDeamon;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		454ED1921B8F024800F224DC /* SaentServiceDeamon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaentServiceDeamon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		454ED1961B8F024800F224DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		454ED1971B8F024800F224DC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		454ED1981B8F024800F224DC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		454ED19A1B8F024800F224DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		454ED19C1B8F024800F224DC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		454ED19F1B8F024800F224DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		454ED1A51B8F024800F224DC /* SaentServiceDeamonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SaentServiceDeamonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		454ED1AA1B8F024800F224DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		454ED1AB1B8F024900F224DC /* SaentServiceDeamonTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaentServiceDeamonTests.m; sourceTree = "<group>"; };
+		454ED1C81B8F0F4E00F224DC /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		454ED1CA1B8F0F5E00F224DC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		454ED1CC1B8F0F9300F224DC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		455017D41B8FEE7E00DEF975 /* CentralClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CentralClient.h; sourceTree = "<group>"; };
+		455017D51B8FEE7E00DEF975 /* CentralClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CentralClient.m; sourceTree = "<group>"; };
+		45536D401B9E7405005EE7A2 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
+		45536D411B9E7405005EE7A2 /* Frame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Frame.m; sourceTree = "<group>"; };
+		45536D461B9F05CA005EE7A2 /* CommonProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonProtocol.h; sourceTree = "<group>"; };
+		455573811BA121AE00FCC8B6 /* BleConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BleConfig.h; sourceTree = "<group>"; };
+		4578D3BC1B94A39E00D7C4DF /* SocketServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketServer.h; sourceTree = "<group>"; };
+		4578D3BD1B94A39E00D7C4DF /* SocketServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocketServer.m; sourceTree = "<group>"; };
+		45D41DEA1B9D4FF6001379D3 /* SocketProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SocketProtocol.h; path = ../SocketProtocol.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		454ED18F1B8F024800F224DC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454ED1CD1B8F0F9300F224DC /* Foundation.framework in Frameworks */,
+				454ED1CB1B8F0F5E00F224DC /* AppKit.framework in Frameworks */,
+				454ED1C91B8F0F4E00F224DC /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		454ED1A21B8F024800F224DC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		454ED1891B8F024800F224DC = {
+			isa = PBXGroup;
+			children = (
+				454ED1941B8F024800F224DC /* SaentServiceDeamon */,
+				454ED1A81B8F024800F224DC /* SaentServiceDeamonTests */,
+				454ED1931B8F024800F224DC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		454ED1931B8F024800F224DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				454ED1921B8F024800F224DC /* SaentServiceDeamon.app */,
+				454ED1A51B8F024800F224DC /* SaentServiceDeamonTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		454ED1941B8F024800F224DC /* SaentServiceDeamon */ = {
+			isa = PBXGroup;
+			children = (
+				455017CC1B8F5EAF00DEF975 /* Modules */,
+				454ED1C71B8F0F0800F224DC /* Framework */,
+				454ED1B61B8F06F800F224DC /* Resource */,
+				454ED1B51B8F06E600F224DC /* Core Data */,
+				454ED1971B8F024800F224DC /* AppDelegate.h */,
+				454ED1981B8F024800F224DC /* AppDelegate.m */,
+				454ED19C1B8F024800F224DC /* Images.xcassets */,
+				454ED19E1B8F024800F224DC /* MainMenu.xib */,
+				454ED1951B8F024800F224DC /* Supporting Files */,
+			);
+			path = SaentServiceDeamon;
+			sourceTree = "<group>";
+		};
+		454ED1951B8F024800F224DC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				454ED1961B8F024800F224DC /* Info.plist */,
+				454ED19A1B8F024800F224DC /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		454ED1A81B8F024800F224DC /* SaentServiceDeamonTests */ = {
+			isa = PBXGroup;
+			children = (
+				454ED1AB1B8F024900F224DC /* SaentServiceDeamonTests.m */,
+				454ED1A91B8F024800F224DC /* Supporting Files */,
+			);
+			path = SaentServiceDeamonTests;
+			sourceTree = "<group>";
+		};
+		454ED1A91B8F024800F224DC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				454ED1AA1B8F024800F224DC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		454ED1B51B8F06E600F224DC /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Core Data";
+			sourceTree = "<group>";
+		};
+		454ED1B61B8F06F800F224DC /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resource;
+			sourceTree = "<group>";
+		};
+		454ED1C71B8F0F0800F224DC /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				455017CB1B8F5E8400DEF975 /* Custom Framework */,
+				455017CA1B8F5E6700DEF975 /* Core Framework */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
+		455017CA1B8F5E6700DEF975 /* Core Framework */ = {
+			isa = PBXGroup;
+			children = (
+				454ED1CC1B8F0F9300F224DC /* Foundation.framework */,
+				454ED1CA1B8F0F5E00F224DC /* AppKit.framework */,
+				454ED1C81B8F0F4E00F224DC /* CoreData.framework */,
+			);
+			name = "Core Framework";
+			sourceTree = "<group>";
+		};
+		455017CB1B8F5E8400DEF975 /* Custom Framework */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Custom Framework";
+			sourceTree = "<group>";
+		};
+		455017CC1B8F5EAF00DEF975 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				455017D01B8F5FAB00DEF975 /* IModule */,
+				455017CF1B8F5F9000DEF975 /* ConfigModule */,
+				455017CE1B8F5F4700DEF975 /* SocketModule */,
+				455017CD1B8F5F2200DEF975 /* BLEModule */,
+			);
+			name = Modules;
+			sourceTree = "<group>";
+		};
+		455017CD1B8F5F2200DEF975 /* BLEModule */ = {
+			isa = PBXGroup;
+			children = (
+				455017D41B8FEE7E00DEF975 /* CentralClient.h */,
+				455017D51B8FEE7E00DEF975 /* CentralClient.m */,
+				45536D401B9E7405005EE7A2 /* Frame.h */,
+				45536D411B9E7405005EE7A2 /* Frame.m */,
+				455573811BA121AE00FCC8B6 /* BleConfig.h */,
+			);
+			name = BLEModule;
+			sourceTree = "<group>";
+		};
+		455017CE1B8F5F4700DEF975 /* SocketModule */ = {
+			isa = PBXGroup;
+			children = (
+				45D41DEA1B9D4FF6001379D3 /* SocketProtocol.h */,
+				4578D3BC1B94A39E00D7C4DF /* SocketServer.h */,
+				4578D3BD1B94A39E00D7C4DF /* SocketServer.m */,
+			);
+			name = SocketModule;
+			sourceTree = "<group>";
+		};
+		455017CF1B8F5F9000DEF975 /* ConfigModule */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ConfigModule;
+			sourceTree = "<group>";
+		};
+		455017D01B8F5FAB00DEF975 /* IModule */ = {
+			isa = PBXGroup;
+			children = (
+				45536D461B9F05CA005EE7A2 /* CommonProtocol.h */,
+			);
+			name = IModule;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		454ED1911B8F024800F224DC /* SaentServiceDeamon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 454ED1AF1B8F024900F224DC /* Build configuration list for PBXNativeTarget "SaentServiceDeamon" */;
+			buildPhases = (
+				454ED18E1B8F024800F224DC /* Sources */,
+				454ED18F1B8F024800F224DC /* Frameworks */,
+				454ED1901B8F024800F224DC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SaentServiceDeamon;
+			productName = SaentServiceDeamon;
+			productReference = 454ED1921B8F024800F224DC /* SaentServiceDeamon.app */;
+			productType = "com.apple.product-type.application";
+		};
+		454ED1A41B8F024800F224DC /* SaentServiceDeamonTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 454ED1B21B8F024900F224DC /* Build configuration list for PBXNativeTarget "SaentServiceDeamonTests" */;
+			buildPhases = (
+				454ED1A11B8F024800F224DC /* Sources */,
+				454ED1A21B8F024800F224DC /* Frameworks */,
+				454ED1A31B8F024800F224DC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				454ED1A71B8F024800F224DC /* PBXTargetDependency */,
+			);
+			name = SaentServiceDeamonTests;
+			productName = SaentServiceDeamonTests;
+			productReference = 454ED1A51B8F024800F224DC /* SaentServiceDeamonTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		454ED18A1B8F024800F224DC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "APAC Builder";
+				TargetAttributes = {
+					454ED1911B8F024800F224DC = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					454ED1A41B8F024800F224DC = {
+						CreatedOnToolsVersion = 6.1.1;
+						TestTargetID = 454ED1911B8F024800F224DC;
+					};
+				};
+			};
+			buildConfigurationList = 454ED18D1B8F024800F224DC /* Build configuration list for PBXProject "SaentServiceDeamon" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 454ED1891B8F024800F224DC;
+			productRefGroup = 454ED1931B8F024800F224DC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				454ED1911B8F024800F224DC /* SaentServiceDeamon */,
+				454ED1A41B8F024800F224DC /* SaentServiceDeamonTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		454ED1901B8F024800F224DC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454ED19D1B8F024800F224DC /* Images.xcassets in Resources */,
+				454ED1A01B8F024800F224DC /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		454ED1A31B8F024800F224DC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		454ED18E1B8F024800F224DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454ED19B1B8F024800F224DC /* main.m in Sources */,
+				4578D3BE1B94A39E00D7C4DF /* SocketServer.m in Sources */,
+				455017D61B8FEE7E00DEF975 /* CentralClient.m in Sources */,
+				45536D421B9E7405005EE7A2 /* Frame.m in Sources */,
+				454ED1991B8F024800F224DC /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		454ED1A11B8F024800F224DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454ED1AC1B8F024900F224DC /* SaentServiceDeamonTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		454ED1A71B8F024800F224DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 454ED1911B8F024800F224DC /* SaentServiceDeamon */;
+			targetProxy = 454ED1A61B8F024800F224DC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		454ED19E1B8F024800F224DC /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				454ED19F1B8F024800F224DC /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		454ED1AD1B8F024900F224DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		454ED1AE1B8F024900F224DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		454ED1B01B8F024900F224DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SaentServiceDeamon/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		454ED1B11B8F024900F224DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SaentServiceDeamon/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		454ED1B31B8F024900F224DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = SaentServiceDeamonTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaentServiceDeamon.app/Contents/MacOS/SaentServiceDeamon";
+			};
+			name = Debug;
+		};
+		454ED1B41B8F024900F224DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = SaentServiceDeamonTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaentServiceDeamon.app/Contents/MacOS/SaentServiceDeamon";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		454ED18D1B8F024800F224DC /* Build configuration list for PBXProject "SaentServiceDeamon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454ED1AD1B8F024900F224DC /* Debug */,
+				454ED1AE1B8F024900F224DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		454ED1AF1B8F024900F224DC /* Build configuration list for PBXNativeTarget "SaentServiceDeamon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454ED1B01B8F024900F224DC /* Debug */,
+				454ED1B11B8F024900F224DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		454ED1B21B8F024900F224DC /* Build configuration list for PBXNativeTarget "SaentServiceDeamonTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454ED1B31B8F024900F224DC /* Debug */,
+				454ED1B41B8F024900F224DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 454ED18A1B8F024800F224DC /* Project object */;
+}

@@ -7,16 +7,22 @@
 //
 
 #import "AppDelegate.h"
+
 #import "CentralClient.h"
-#import "SocketServer.h"
 
-@interface AppDelegate () <CentralClientDelegate>
+#import "DOServer.h"
 
-// Bluetooth
-@property (nonatomic, strong) CentralClient *central;
+#import "MainModule.h"
 
-// Socket Server
-@property(nonatomic, strong) SocketServer *server;
+#import "BaseConfig.h"
+
+@interface AppDelegate ()
+
+@property(nonatomic, strong) CentralClient *bleModule;
+
+@property(nonatomic, strong) DOServer *doModule;
+
+@property (nonatomic, strong) MainModule *centralModule;
 
 @end
 
@@ -24,31 +30,37 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     
-    // Setup Bluetooth Central implementation
+    // Init
     
-    self.central = [[CentralClient alloc] initWithDelegate:self];
+    self.bleModule = [CentralClient getSingleton];
     
-    self.central.peripheralUUID = @"8AEB2190-1C15-4AF4-99AA-0C3F98E729C0";
+    self.doModule = [DOServer getSingleton];
     
-    self.central.serviceUUIDs = @[
-                                  [CBUUID UUIDWithString:@"180d"]
-                                  ];
+    self.centralModule = [[MainModule alloc] initWith:self.bleModule
+                                             doModule:self.doModule];
     
-    self.central.characteristicUUIDs = @[
-                                         [CBUUID UUIDWithString:@"2a37"],
-                                         [CBUUID UUIDWithString:@"2a38"],
-                                         [CBUUID UUIDWithString:@"2a39"]
-                                         ];
+    // Set delegate
     
-    self.central.charactericticReceiveUUID = [CBUUID UUIDWithString:@""];
+    [self.bleModule setDelegate:self.centralModule];
     
-    self.central.charactericticTransferUUID = [CBUUID UUIDWithString:@""];
+    [self.doModule setDelegate:self.centralModule];
     
-    // Setup Socket Server
+    // Some config for bleModule - change it
     
-    self.server = [[SocketServer alloc] init:self];
+    // serviceUUID = 6e400001 ba53f393 e0a9e50e 24dcca9e
     
-    self.server.port = 2048;
+    self.bleModule.serviceUUIDs = @[
+                                     [CBUUID UUIDWithString:@"6E400001-BA53-F393-E0A9-E50E24DCCA9E"]
+                                     ];
+    
+    self.bleModule.characteristicUUIDs = @[
+                                    [CBUUID UUIDWithString:@"6E400003-BA53-F393-E0A9-E50E24DCCA9E"],
+                                    [CBUUID UUIDWithString:@"6E400002-BA53-F393-E0A9-E50E24DCCA9E"]
+                                    ];
+    
+    self.bleModule.charactericticReceiveUUID = [CBUUID UUIDWithString:@"6E400003-BA53-F393-E0A9-E50E24DCCA9E"];
+    
+    self.bleModule.charactericticTransferUUID = [CBUUID UUIDWithString:@"6E400002-BA53-F393-E0A9-E50E24DCCA9E"];
     
     // Setup some basic hooks in the interface.
     
@@ -58,21 +70,23 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     
-    [self.central disconnectPeripheral];
+    
     
 }
 
 - (void)appendLogMessage:(NSString *)message {
     
-    self.bleInformation.string = [self.bleInformation.string stringByAppendingFormat:@"%@\n", message];
-    
-    [self.bleInformation performSelector:@selector(scrollPageDown:) withObject:nil afterDelay:0];
+//    self.bleInformation.string = [self.bleInformation.string stringByAppendingFormat:@"%@\n", message];
+//    
+//    [self.bleInformation performSelector:@selector(scrollPageDown:) withObject:nil afterDelay:0];
     
 }
 
 - (NSString *)getChatMessage{
 
-    NSString *msg = [[self.sockMessage textStorage] string];
+//    NSString *msg = [[self.sockMessage textStorage] string];
+
+    NSString *msg = nil;
     
     return msg;
 
@@ -80,71 +94,88 @@
 
 - (void)clearChatMessage{
 
-    [self.sockMessage setString:@""];
+//    [self.sockMessage setString:@""];
     
 }
 
 - (void)appendChatMessage: (NSString *)message {
 
-    self.sockContent.string = [self.sockContent.string stringByAppendingFormat:@"%@\n", message];
-    
-    [self.sockContent performSelector:@selector(scrollPageDown:) withObject:nil afterDelay:0];
+//    self.sockContent.string = [self.sockContent.string stringByAppendingFormat:@"%@\n", message];
+//    
+//    [self.sockContent performSelector:@selector(scrollPageDown:) withObject:nil afterDelay:0];
 
 }
 
 - (IBAction)discoverPeripherals:(id)sendor{
     
-    [self.central discoverPeripherals];
+    [self.bleModule centralClientDiscoverPeripherals];
     
 }
 
 - (IBAction)connectPeripheral:(id)sendor{
     
-    [self.central connectPeripheral];
+//    [self.central connectPeripheral];
     
 }
 
-//- (IBAction)stopForPeripherals:(id)sendor{
+//- (IBAction)disconnectPeripheral:(id)sendor{
 //    
 //}
 
-- (IBAction)discoverServices:(id)sender{
+- (IBAction)readCharacteristic:(id)sender{
     
-    [self.central discoverServices];
-    
-}
-
-- (IBAction)connectService:(id)sender{
-    
-    [self.central connectService];
+//    [self.central readCharacteristic];
     
 }
 
-- (IBAction)discoverCharacterics:(id)sender{
+- (IBAction)setTime:(id)sender{
     
-    [self.central discoverCharacterics];
-
-}
-
-- (IBAction)subscribe:(id)sender{
-    
-    [self.central subscribe];
+//    [self.central setTime:3600];
     
 }
 
-- (IBAction)readValueOfCharacteristic:(id)sender{
+- (IBAction)startSession:(id)sender{
     
-    [self.central readValueOfCharacteristic];
+//    [self.central startSession];
+
+}
+
+- (IBAction)stopSession:(id)sender{
+    
+//    [self.central stopSession];
+    
+}
+
+- (IBAction)requestResult:(id)sender{
+    
+//    [self.central requestResult];
     
 }
 
 - (IBAction)configureSeantHWService:(id)sendor{
     
+    BaseConfig* config = [[BaseConfig alloc] init];
+    
+    [config saveDeviceID:@"1234567889"];
+    
+    NSString *deviceID = [config getDeviceID];
+    
+    NSLog(@"deviceID: %@", deviceID);
+    
+//    NSString *key = nil;
+//    
+//    NSString *value = nil;
+//    
+//    [config getConfig:&key
+//                value:&value];
+//    
+//    NSLog(@"deviceID: %@", value);
+    
 }
 
 - (IBAction)startServer:(id)sender{
     
-    [self.server setup];
+    //    [self.server setup];
     
 }
 
@@ -152,13 +183,13 @@
     
 //    Setup server message from here
     
-    NSString *msg = [self getChatMessage];
-    
-    [self.server writeOut:[NSString stringWithFormat:@"Server: %@", msg]];
-    
-    [self appendChatMessage: [NSString stringWithFormat:@"Server: %@", msg]];
-    
-    [self clearChatMessage];
+//    NSString *msg = [self getChatMessage];
+//    
+//    [self.server writeOut:[NSString stringWithFormat:@"Server: %@", msg]];
+//    
+//    [self appendChatMessage: [NSString stringWithFormat:@"Server: %@", msg]];
+//    
+//    [self clearChatMessage];
     
 }
 
@@ -166,7 +197,7 @@
 
 - (void)centralClientDidConnect:(CentralClient *)central {
     
-    [self appendLogMessage:@"Connnected to Peripheral"];
+//    [self appendLogMessage:@"Connnected to Peripheral"];
     
     // [self.central subscribe];
     
@@ -174,19 +205,19 @@
 
 - (void)centralClientDidDisconnect:(CentralClient *)central {
     
-    [self appendLogMessage:@"Disconnected to Peripheral"];
+//    [self appendLogMessage:@"Disconnected to Peripheral"];
     
 }
 
 - (void)centralClientDidSubscribe:(CentralClient *)central {
     
-    [self appendLogMessage:@"Subscribed to Characteristic"];
+//    [self appendLogMessage:@"Subscribed to Characteristic"];
     
 }
 
 - (void)centralClientDidUnsubscribe:(CentralClient *)central {
     
-    [self appendLogMessage:@"Unsubscribed to Characteristic"];
+//    [self appendLogMessage:@"Unsubscribed to Characteristic"];
     
 }
 
@@ -195,11 +226,11 @@
        characteristic:(CBCharacteristic *)characteristic
        didUpdateValue:(NSData *)value {
     
-    NSString *printable = [[NSString alloc] initWithData:value encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"didUpdateValue: %@", printable);
-    
-    [self appendLogMessage:[NSString stringWithFormat:@" >> Received Data: %@", printable]];
+//    NSString *printable = [[NSString alloc] initWithData:value encoding:NSUTF8StringEncoding];
+//    
+//    NSLog(@"didUpdateValue: %@", printable);
+//    
+//    [self appendLogMessage:[NSString stringWithFormat:@" >> Received Data: %@", printable]];
     
     // [self.central unsubscribe];
     
@@ -207,9 +238,9 @@
 
 - (void)centralClient:(CentralClient *)central connectDidFail:(NSError *)error {
     
-    NSLog(@"Error: %@", error);
-    
-    [self appendLogMessage:[error description]];
+//    NSLog(@"Error: %@", error);
+//    
+//    [self appendLogMessage:[error description]];
     
 }
 
@@ -217,9 +248,9 @@
 requestForCharacteristic:(CBCharacteristic *)characteristic
               didFail:(NSError *)error {
     
-    NSLog(@"Error: %@", error);
-    
-    [self appendLogMessage:[error description]];
+//    NSLog(@"Error: %@", error);
+//    
+//    [self appendLogMessage:[error description]];
     
 }
 

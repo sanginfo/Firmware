@@ -8,11 +8,7 @@
 
 #import "CentralClient.h"
 
-static const NSTimeInterval scanningTimeout = 20.0;
-
-static const NSTimeInterval connectingTimeout = 20.0;
-
-static const NSTimeInterval requestTimeout = 20.0;
+static CentralClient *instance = nil;
 
 @interface CentralClient () <CBCentralManagerDelegate, CBPeripheralDelegate>
 
@@ -24,48 +20,56 @@ static const NSTimeInterval requestTimeout = 20.0;
 
 @property(nonatomic, strong) CBService *connectedService;
 
-@property(nonatomic, assign) BOOL subscribeWhenCharacteristicsFound;
+@property(nonatomic, strong) CBCharacteristic *nConnectedCharacteristic;
 
-@property(nonatomic, assign) BOOL connectWhenReady;
+@property(nonatomic, strong) CBCharacteristic *wConnectedCharacteristic;
+
+@property(nonatomic, strong) BaseConfig *config;
 
 @end
 
 @implementation CentralClient
 
-+ (NSError *)errorWithDescription:(NSString *)description {
-    
-    static NSString * const centralClientErrorDomain = @"com.apac.CentralClient";
-    
-    NSDictionary *userInfo = @{NSLocalizedDescriptionKey : description};
-    
-    return [NSError errorWithDomain:centralClientErrorDomain
-                               code:-1
-                           userInfo:userInfo];
-}
+#pragma mark - init
 
 - (id)init {
-    return [self initWithDelegate:nil];
-}
-
-- (id)initWithDelegate:(id<CentralClientDelegate>)delegate {
     
     self = [super init];
     
     if (self) {
         
-        self.delegate = delegate;
-        
         self.manager = [[CBCentralManager alloc] initWithDelegate:self
                                                             queue:dispatch_get_current_queue()];
         self.listPeripheral = [[NSMutableArray alloc] init];
+        
+        self.config = [[BaseConfig alloc] init];
+        
+        self.disconnected = NO;
+    
     }
     
     return self;
 }
 
-// CBCentralManagerDelegate - central update
++ (CentralClient*) getSingleton{
+
+    @synchronized(self){
+    
+        if(instance == nil){
+            
+            instance = [[CentralClient alloc] init];
+        
+        }
+        
+        return instance;
+        
+    }
+
+}
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
+    
+    NSMutableString* message = [[NSMutableString alloc] init];
     
     switch (central.state) {
             
@@ -73,11 +77,15 @@ static const NSTimeInterval requestTimeout = 20.0;
             
             NSLog(@"The platform/hardware doesn't support Bluetooth Low Energy.");
             
+            [message appendFormat:@"[centralManagerDidUpdateState]The platform/hardware doesn't support Bluetooth Low Energy. \n"];
+            
             break;
             
         case CBCentralManagerStateUnauthorized:
             
             NSLog(@"The app is not authorized to use Bluetooth Low Energy.");
+            
+            [message appendFormat:@"[centralManagerDidUpdateState]The app is not authorized to use Bluetooth Low Energy. \n"];
             
             break;
             
@@ -85,28 +93,15 @@ static const NSTimeInterval requestTimeout = 20.0;
             
             NSLog(@"Bluetooth is currently powered off.");
             
+            [message appendFormat:@"[centralManagerDidUpdateState]Bluetooth is currently powered off. \n"];
+            
             break;
             
         case CBCentralManagerStatePoweredOn:
             
             NSLog(@"Bluetooth is currently powered on.");
             
-            if (self.subscribeWhenCharacteristicsFound) {
-                
-                if (self.connectedService) {
-                    
-                    [self subscribe];
-                    
-                    return;
-                }
-            }
-            
-            if (self.connectWhenReady) {
-                
-                [self connectPeripheral];
-                
-                return;
-            }
+            [message appendFormat:@"[centralManagerDidUpdateState]Bluetooth is currently powered on. \n"];
             
             break;
             
@@ -114,120 +109,40 @@ static const NSTimeInterval requestTimeout = 20.0;
             
             NSLog(@"centralManager did update: %ld", central.state);
             
+            [message appendFormat:@"[centralManagerDidUpdateState]centralManager did update: %ld \n", central.state];
+            
             break;
     }
+    
+    [self.delegate centralClientSendResult:-1
+                                   message:message
+                                 exception:nil];
 }
 
-/* ------------ Periperal section - Start -------- */
+#pragma mark - method implement
 
-// Scan
-
-- (void)discoverPeripherals {
+- (void)centralClientDiscoverPeripherals {
     
-    if (self.manager.state != CBCentralManagerStatePoweredOn) {
-        
-        self.connectWhenReady = YES;
-        
-        return;
-    }
+    NSLog(@"BleModule: Scanning ...");
     
-    NSLog(@"Scanning ...");
-    
-    [self startScanningTimeoutMonitor];
-    
-    // NSDictionary *scanningOptions = @{ CBCentralManagerScanOptionAllowDuplicatesKey : @YES };
+     NSDictionary *scanningOptions = @{ CBCentralManagerScanOptionAllowDuplicatesKey : @NO };
     
     [self.manager scanForPeripheralsWithServices:nil
-                                         options:nil];
-    
-    self.connectWhenReady = NO;
-    
-    self.subscribeWhenCharacteristicsFound = NO;
+                                         options:scanningOptions];
+
 }
 
-- (void)cancelScanForPeripherals {
+- (void)centralClientConnectPeripheral {
     
-    [self.manager stopScan];
-    
-}
-
-// Scan Timeout
-
-- (void)startScanningTimeoutMonitor {
-    
-    [self cancelScanningTimeoutMonitor];
-    
-    [self performSelector:@selector(scanningDidTimeout)
-               withObject:nil
-               afterDelay:scanningTimeout];
-    
-}
-
-- (void)cancelScanningTimeoutMonitor {
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(scanningDidTimeout)
-                                               object:nil];
-}
-
-- (void)scanningDidTimeout {
-    
-    NSLog(@"Scanning did timeout");
-    
-    NSError *error = [[self class] errorWithDescription:@"Unable to find a BTLE device."];
-    
-    [self.delegate centralClient:self connectDidFail:error];
-    
-    [self cancelScanForPeripherals];
-}
-
-// CBPeripheralDelegate - after scanning peripherals
-
-- (void)centralManager:(CBCentralManager *)central
- didDiscoverPeripheral:(CBPeripheral *)peripheral
-     advertisementData:(NSDictionary *)advertisementData
-                  RSSI:(NSNumber *)RSSI {
-    
-    NSLog(@"Peripheral Information: ");
-    
-    CBUUID *peripheralUUID = [CBUUID UUIDWithCFUUID:peripheral.UUID];
-    
-    NSLog(@"CFUUID: %@", peripheral.identifier.UUIDString);
-    
-    NSLog(@"CBUUID: %@", peripheralUUID);
-    
-    NSLog(@"Name: %@", peripheral.name);
-    
-    NSLog(@"Advertisment Data: %@", advertisementData);
-    
-    NSLog(@"RSSI: %@", RSSI);
-    
-    [self.listPeripheral addObject: peripheral];
-    
-}
-
-
-// Connect
-
-- (void)connectPeripheral {
-    
-    NSLog(@"Connecting...");
-    
-    [self cancelScanningTimeoutMonitor];
+    NSLog(@"BleModule: Connecting ...");
     
     [self.manager stopScan];
     
     for (CBPeripheral *peripheral in self.listPeripheral) {
         
-        NSLog(@"Checking %@", peripheral.identifier.UUIDString);
-        
         if ([peripheral.identifier.UUIDString isEqualToString:self.peripheralUUID]) {
             
-            NSLog(@"Connecting ... %@", peripheral.identifier.UUIDString);
-            
             [self.manager connectPeripheral:peripheral options:nil];
-            
-            [self startConnectionTimeoutMonitor:peripheral];
             
             return;
             
@@ -236,232 +151,84 @@ static const NSTimeInterval requestTimeout = 20.0;
     
 }
 
-// Connect Timeout
-
-- (void)startConnectionTimeoutMonitor:(CBPeripheral *)peripheral {
+- (void)centralClientDisconnectPeripheral {
     
-    [self cancelConnectionTimeoutMonitor:peripheral];
+    self.disconnected = YES;
     
-    [self performSelector:@selector(connectionDidTimeout:)
-               withObject:peripheral
-               afterDelay:connectingTimeout];
-    
-}
-
-- (void)cancelConnectionTimeoutMonitor:(CBPeripheral *)peripheral {
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(connectionDidTimeout:)
-                                               object:peripheral];
-    
-}
-
-- (void)connectionDidTimeout:(CBPeripheral *)peripheral {
-    
-    NSLog(@"connectionDidTimeout: %@", peripheral.UUID);
-    
-    NSError *error = [[self class] errorWithDescription:@"Unable to connect to BTLE device."];
-    
-    [self.delegate centralClient:self connectDidFail:error];
-    
-    [self.manager cancelPeripheralConnection:peripheral];
-    
-}
-
-- (void)centralManager:(CBCentralManager *)central
-didFailToConnectPeripheral:(CBPeripheral *)peripheral
-                 error:(NSError *)error {
-    
-    NSLog(@"failedToConnectPeripheral: %@", peripheral);
-    
-    [self cancelConnectionTimeoutMonitor:peripheral];
-    
-    [self.delegate centralClient:self connectDidFail:error];
-    
-}
-
-// CBPeripheralDelegate - after connecting to peripheral
-
-- (void)centralManager:(CBCentralManager *)central
-  didConnectPeripheral:(CBPeripheral *)peripheral {
-    
-    NSLog(@"Connected: %@", peripheral.name);
-    
-    [self cancelConnectionTimeoutMonitor:peripheral];
-    
-    self.connectedPeripheral = peripheral;
-    
-    //    [self discoverServices:peripheral];
-    
-}
-
-- (void)disconnectPeripheral {
+    NSLog(@"Disconnected...");
     
     [self cancelScanForPeripherals];
     
     [self.manager cancelPeripheralConnection:self.connectedPeripheral];
     
-    self.connectedPeripheral = nil;
-    
-}
-
-- (void)centralManager:(CBCentralManager *)central
-didDisconnectPeripheral:(CBPeripheral *)peripheral
-                 error:(NSError *)error {
+    [self unsubscribe];
     
     self.connectedPeripheral = nil;
     
-    self.connectedService = nil;
-    
-    NSLog(@"peripheralDidDisconnect: %@", peripheral);
-    
-    [self.delegate centralClientDidDisconnect:self];
-    
 }
 
-/* ------------ Periperal section - End -------- */
-
-
-/* ------------ Service section - Start -------- */
-
-- (void)discoverServices{
+- (void)centralClientWriteCharacteristic: (uint8)typeCommand
+                              data: (NSData *)data {
     
-    NSLog(@"Discovering service...");
+    NSLog(@"BleModule: writeCharacteristic");
     
-    [self discoverServices:self.connectedPeripheral];
-    
-}
-
-- (void)discoverServices:(CBPeripheral *)peripheral {
-    
-    [peripheral setDelegate:self];
-    
-    [peripheral discoverServices:nil];
-    
-}
-
-// CBPeripheralDelegate - after discovering service of peripheral
-
-- (void)peripheral:(CBPeripheral *)peripheral
-didDiscoverServices:(NSError *)error {
-    
-    if (error) {
+    if(!self.connectedService){
         
-        [self.delegate centralClient:self connectDidFail:error];
-        
-        NSLog(@"Discover Services: Error: %@", error);
+        NSLog(@"No service is found");
         
         return;
-    }
-    
-    NSLog(@"Services Count: %ld", peripheral.services.count);
-    
-    for (CBService *service in peripheral.services) {
-        
-        NSLog(@"ServiceUUID: %@", service.UUID);
         
     }
     
-}
-
-- (void)connectService{
+    if(!self.wConnectedCharacteristic){
     
-    NSLog(@"Connecting to service....");
-    
-    for (CBService *service in self.connectedPeripheral.services) {
-    
-        NSLog(@"Connected service: %@", service.UUID);
-        
-        if (self.connectedService) continue;
-        
-        if ([self.serviceUUIDs containsObject:service.UUID]) {
-        
-            self.connectedService = service;
-                    
-        }
-        
-    }
-    
-}
-
-/* ------------ Service section - End -------- */
-
-/* ------------ Characteric section - Start -------- */
-
-- (void)discoverCharacterics{
-    
-    NSLog(@"Discovering Service Characteristics....");
-    
-    [self discoverCharacteristics:self.connectedService];
-    
-}
-
-- (void)discoverCharacteristics:(CBService *)service {
-    
-    [self.connectedPeripheral discoverCharacteristics:nil
-                                           forService:service];
-    
-}
-
-
-// Request Timeout
-
-- (void)startRequestTimeout:(CBCharacteristic *)characteristic {
-    
-    [self cancelRequestTimeoutMonitor:characteristic];
-    
-    [self performSelector:@selector(requestDidTimeout:)
-               withObject:characteristic
-               afterDelay:requestTimeout];
-    
-}
-
-- (void)cancelRequestTimeoutMonitor:(CBCharacteristic *)characteristic {
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(requestDidTimeout:)
-                                               object:characteristic];
-    
-}
-
-- (void)requestDidTimeout:(CBCharacteristic *)characteristic {
-    
-    NSLog(@"requestDidTimeout: %@", characteristic);
-    
-    NSError *error = [[self class] errorWithDescription:@"Unable to request data from BTLE device."];
-    
-    [self.delegate centralClient:self
-        requestForCharacteristic:characteristic
-                         didFail:error];
-    
-    [self.connectedPeripheral setNotifyValue:NO
-                           forCharacteristic:characteristic];
-    
-}
-
-// CBPeripheralDelegate - after discovering characteristics for service
-
-- (void)peripheral:(CBPeripheral *)peripheral
-didDiscoverCharacteristicsForService:(CBService *)service
-             error:(NSError *)error {
-    
-    if (error) {
-        
-        [self.delegate centralClient:self connectDidFail:error];
-        
-        NSLog(@"Discover characteristic with Error: %@", error);
+        NSLog(@"No characteristic for write( transfer)");
         
         return;
+    
     }
     
-    NSLog(@"Found %ld characteristic(s)", service.characteristics.count);
+    NSMutableString* message = [[NSMutableString alloc] init];
     
-    for (CBCharacteristic *characteristic in service.characteristics) {
+    [message appendFormat:@"Checking write permission.... \n"];
+    
+    if(self.wConnectedCharacteristic.properties &
+       (CBCharacteristicPropertyWriteWithoutResponse | CBCharacteristicPropertyWrite)){
+                
+        NSLog(@"Characteristic %@ can write", self.wConnectedCharacteristic.UUID);
+                
+        Frame *frame = [Frame getSingleton];
+                
+        NSData *dataToWrite = [frame createCommand: typeCommand
+                                                      data:data];
         
-        NSLog(@"Characteristic: %@", characteristic.UUID);
+        [message appendFormat:@"Writing to characteristic with data: %@", dataToWrite];
         
+        [self.delegate centralClientSendResult: -1
+                                       message: message
+                                     exception:nil];
+                
+        [self.connectedPeripheral writeValue:dataToWrite forCharacteristic:self.wConnectedCharacteristic
+                                        type:CBCharacteristicWriteWithResponse];
+                
+        return;
+                
+    }else{
+                
+        [message appendFormat:@"Characteristic does not write \n"];
+                
     }
     
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
+    
+}
+
+- (void)centralClientSendNotification{
+
+    
+
 }
 
 - (void)subscribe {
@@ -474,25 +241,39 @@ didDiscoverCharacteristicsForService:(CBService *)service
         
     }
     
-    for (CBCharacteristic *characteristic in self.connectedService.characteristics) {
+    if(!self.nConnectedCharacteristic){
         
-        if (characteristic.properties & CBCharacteristicPropertyNotify) {
-            
-            NSLog(@"Subscribed Characteristic: %@", characteristic.UUID);
-
-            [self.connectedPeripheral setNotifyValue:YES
-                                   forCharacteristic:characteristic];
-            
-        }else{
+        NSLog(@"No characteristic for read( notify)");
         
-            NSLog(@"Can not subscribe characteristic: %@", characteristic.UUID);
-            
-        }
+        return;
         
     }
     
-    [self.delegate centralClientDidSubscribe:self];
+    // send response
     
+    NSMutableString *message = [[NSMutableString alloc] init];
+    
+    [message appendFormat:@"Subscribe... \n"];
+    
+    if (self.nConnectedCharacteristic.properties & CBCharacteristicPropertyNotify) {
+    
+        NSLog(@"Subscribed Characteristic: %@", self.nConnectedCharacteristic.UUID);
+                
+        [self.connectedPeripheral setNotifyValue:YES
+                               forCharacteristic:self.nConnectedCharacteristic];
+                
+        return;
+                
+    }else{
+                
+        [message appendFormat:@"Do not subscribe... \n"];
+                
+    }
+    
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
+
 }
 
 - (void)unsubscribe {
@@ -501,50 +282,258 @@ didDiscoverCharacteristicsForService:(CBService *)service
     
     for (CBCharacteristic *characteristic in self.connectedService.characteristics) {
         
-        if (characteristic.properties & CBCharacteristicPropertyNotify) {
+        if([characteristic.UUID isEqualTo:self.charactericticReceiveUUID]){
             
-            NSLog(@"Unsubscribed Characteristic: %@", characteristic.UUID);
+            if (characteristic.properties & CBCharacteristicPropertyNotify) {
+                
+                NSLog(@"Unsubscribed Characteristic: %@", characteristic.UUID);
+                
+                [self.connectedPeripheral setNotifyValue:NO forCharacteristic:characteristic];
+            }
             
-            [self.connectedPeripheral setNotifyValue:NO forCharacteristic:characteristic];
         }
     }
-    
-    [self.delegate centralClientDidUnsubscribe:self];
+
 }
 
-// Callback after subcribe
+- (void)cancelScanForPeripherals {
+    
+    [self.manager stopScan];
+    
+}
+
+- (void)checkReady: (CBPeripheral*)peripheral{
+    
+    NSLog(@"Check ready...");
+    
+    [peripheral discoverServices:self.serviceUUIDs];
+    
+    return;
+
+}
+
+#pragma mark - delegate
+
+- (void)centralManager:(CBCentralManager *)central
+ didDiscoverPeripheral:(CBPeripheral *)peripheral
+     advertisementData:(NSDictionary *)advertisementData
+                  RSSI:(NSNumber *)RSSI {
+    
+    @synchronized(self.listPeripheral){
+        
+        if(![self.listPeripheral containsObject:peripheral]){
+            
+            NSLog(@"Added this peripheral to list");
+    
+            [self.listPeripheral addObject: peripheral];
+            
+            NSLog(@"number peripheral of list: %lu", [self.listPeripheral count]);
+        
+            [self.delegate centralClientDiscoverPeripheralResult:self.listPeripheral];
+            
+        }
+        
+    }
+    
+}
+
+- (void)centralManager:(CBCentralManager *)central
+  didConnectPeripheral:(CBPeripheral *)peripheral {
+    
+    NSLog(@"Connecting to: %@", peripheral.name);
+    
+    self.connectedPeripheral = peripheral;
+    
+    // save devideID to config.xml file if connected to device
+    [self.config saveDeviceID:peripheral.identifier.UUIDString];
+    
+    self.connectedPeripheral.delegate = self;
+    
+    [self checkReady:peripheral];
+    
+    // send response
+    
+    NSMutableString *message = [[NSMutableString alloc] init];
+    
+    [message appendFormat:@"Connected to %@ \n", peripheral.identifier.UUIDString];
+    
+    [message appendFormat:@"Checking services and characteristics... \n"];
+    
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
+    
+}
+
+- (void)centralManager:(CBCentralManager *)central
+didDisconnectPeripheral:(CBPeripheral *)peripheral
+                 error:(NSError *)error {
+    
+    NSLog(@"Disconnected to peripheral");
+    
+    // Send command back
+    
+    NSMutableString *message = [[NSMutableString alloc] init];
+    
+    [message appendFormat:@"Disconnected \n"];
+    
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
+    
+    if(self.disconnected == NO){
+        
+        NSLog(@"Reconnecting...");
+        
+        [self centralClientDiscoverPeripherals];
+        
+        if(self.listPeripheral){
+        
+            if(self.peripheralUUID == nil){
+                
+                self.peripheralUUID = [self.config getDeviceID];
+                
+            }
+            
+            [self centralClientConnectPeripheral];
+        
+        }
+        
+    
+    }else{
+        
+//        self.peripheralUUID = nil;
+        
+        self.connectedPeripheral = nil;
+    
+        self.connectedService = nil;
+        
+        self.wConnectedCharacteristic = nil;
+        
+        self.nConnectedCharacteristic = nil;
+    
+        NSLog(@"peripheralDidDisconnect: %@", peripheral);
+        
+    }
+    
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral
+didDiscoverServices:(NSError *)error {
+    
+    if (error) {
+        
+        NSLog(@"Discover Services: Error: %@", error);
+        
+        return;
+    }
+    
+    NSLog(@"Found Services Count: %ld", peripheral.services.count);
+    
+    for (CBService *service in peripheral.services) {
+                        
+        NSLog(@"FoundServiceUUID: %@", service.UUID);
+        
+        if ([self.serviceUUIDs containsObject:service.UUID]) {
+            
+            NSLog(@"Discover Characteristic");
+            
+            self.connectedService = service;
+            
+            [peripheral discoverCharacteristics:self.characteristicUUIDs forService:self.connectedService];
+            
+            return;
+            
+        }else{
+        
+            NSLog(@"Service does not match");
+        
+        }
+        
+    }
+    
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral
+didDiscoverCharacteristicsForService:(CBService *)service
+             error:(NSError *)error {
+    
+    if (error) {
+        
+        NSLog(@"Discover characteristic with Error: %@", error);
+        
+        return;
+    }
+    
+    NSLog(@"Found %ld characteristic(s)", service.characteristics.count);
+    
+    for (CBCharacteristic *characteristic in service.characteristics) {
+        
+        NSLog(@"Characteristic: %@", characteristic.UUID);
+        
+        if([characteristic.UUID isEqualTo:self.charactericticReceiveUUID]){
+            
+            NSLog(@"Received Characteristic: %@", characteristic.UUID);
+        
+            self.nConnectedCharacteristic = characteristic;
+            
+            [self subscribe];
+        
+        }
+        
+        if([characteristic.UUID isEqualTo:self.charactericticTransferUUID]){
+        
+            NSLog(@"Tranfered Characteristic: %@", characteristic.UUID);
+            
+            self.wConnectedCharacteristic = characteristic;
+        
+        }
+        
+    }
+    
+    if(self.nConnectedCharacteristic && self.wConnectedCharacteristic){
+    
+        // send response
+        
+        NSMutableString *message = [[NSMutableString alloc] init];
+        
+        [message appendFormat:@"Service is ready for using \n"];
+        
+        [self.delegate centralClientSendResult: -1
+                                       message: message
+                                     exception:nil];
+    
+    }
+    
+}
 
 - (void)peripheral:(CBPeripheral *)peripheral
 didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error {
     
+    NSMutableString* message = [[NSMutableString alloc] init];
+    
     if (error) {
         
-        NSLog(@"Error changing notification state: %@", [error localizedDescription]);
+        [message appendFormat:@"Update notification state of characteristic(%@) is fail! \n", characteristic.UUID];
+        
+        NSLog(@"Error subscribe: %@", error);
+        
+        [self.delegate centralClientSendResult: -1
+                                       message: message
+                                     exception:nil];
         
         return;
         
     }
     
-}
-
-- (void)readValueOfCharacteristic{
+    NSLog(@"----------Notify success---------");
     
-    for (CBCharacteristic *characteristic in self.connectedService.characteristics) {
-        
-        if(characteristic.properties & CBCharacteristicPropertyRead){
-        
-            NSLog(@"Characteristic %@ can read", characteristic.UUID);
-            
-            [self.connectedPeripheral readValueForCharacteristic:characteristic];
-            
-        }else{
-        
-            NSLog(@"Characteristic %@ can not read", characteristic.UUID);
-            
-        }
-        
-    }
+    [message appendFormat:@"Subscribe success \n"];
+    
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
     
 }
 
@@ -552,110 +541,68 @@ didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic
 didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error {
     
-    [self cancelRequestTimeoutMonitor:characteristic];
+    NSMutableString* message = [[NSMutableString alloc] init];
     
     if (error) {
         
-        NSLog(@"Update Value Error: %@", error);
+        [message appendFormat:@"[Trigger]Update value error \n"];
         
-        [self.delegate centralClient:self requestForCharacteristic:characteristic didFail:error];
+        [self.delegate centralClientSendResult: -1
+                                       message: message
+                                     exception:nil];
         
         return;
     }
     
     NSData *data = characteristic.value;
     
-    NSLog(@"Update Value For Char: Value: %@", data);
+    NSLog(@"Characteristic value: %@", data);
     
-    Frame *frame = [[Frame alloc] initWithData:data];
+    Frame *frame = [Frame getSingleton];
     
-    [frame detectCommand];
+    [frame parseData:data];
     
-    [self.delegate centralClient:self
-                  characteristic:characteristic
-                  didUpdateValue:characteristic.value];
+    NSLog(@"type: %04x", frame.type);
     
-}
-
-- (void)setTime{
-
-    const uint16 sessionTime = 300;
+    NSLog(@"data: %04x", frame.data);
     
-    NSMutableData *data = [[NSMutableData alloc] init];
+    NSString* command = [frame detectCommand];
     
-    [data appendBytes:&sessionTime length:sizeof(sessionTime)];
+    [message appendFormat:@"[Trigger]Detected Command: %@ \n", command];
     
-    [self writeValueOfCharacteristic:SET_TIME
-                              data:data];
-
-}
-
-- (void)startSession{
-
-    [self writeValueOfCharacteristic:START_SESSION
-                                data:nil];
-
-}
-
-- (void)stopSession{
-
-    [self writeValueOfCharacteristic:STOP_SESSION
-                                data:nil];
-
-}
-
-- (void)requireRequest{
-
-    [self writeValueOfCharacteristic:REQUEST_RESULT
-                                data:nil];
-
-}
-
-- (void)writeValueOfCharacteristic: (uint8)typeCommand
-                            data: (NSData *)data {
+    NSLog(@"[Trigger]Detected Command: %@ \n", command);
     
-    for (CBCharacteristic *characteristic in self.connectedService.characteristics) {
-        
-        if([characteristic.UUID isEqual:self.charactericticTransferUUID]){
-        
-            if(characteristic.properties & (CBCharacteristicWriteWithResponse || CBCharacteristicWriteWithoutResponse)){
-            
-                NSLog(@"Characteristic %@ can read", characteristic.UUID);
-                
-                Frame *frame = [[Frame alloc] init];
-                
-                NSData *dataToWrite = [frame createCommand: typeCommand
-                                                      data:data];
-            
-                [self.connectedPeripheral writeValue:dataToWrite forCharacteristic:characteristic
-                                            type:CBCharacteristicWriteWithResponse];
-            
-            }else{
-            
-                NSLog(@"Characteristic %@ can not read", characteristic.UUID);
-            
-            }
-            
-            return;
-            
-        }
-        
-    }
-
+    [self.delegate centralClientSendResult: frame.data
+                                   message: message
+                                 exception:nil];
+    
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral
 didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error {
     
+    NSMutableString *message = [[NSMutableString alloc] init];
+    
     if (error) {
         
-        NSLog(@"Error writing characteristic value: %@", [error localizedDescription]);
+        [message appendFormat:@"Error writing characteristic \n"];
+        
+        [self.delegate centralClientSendResult: -1
+                                       message: message
+                                     exception:nil];
+        
+        return;
         
     }
     
+    [message appendFormat:@"Writing characteristic is success \n"];
+    
+    [self.delegate centralClientSendResult: -1
+                                   message: message
+                                 exception:nil];
+    
 }
 
-/* ------------ Characteric section - End -------- */
 
 @end

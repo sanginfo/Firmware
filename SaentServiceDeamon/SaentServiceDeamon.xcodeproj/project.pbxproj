@@ -18,6 +18,13 @@
 		455017D61B8FEE7E00DEF975 /* CentralClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 455017D51B8FEE7E00DEF975 /* CentralClient.m */; };
 		45536D421B9E7405005EE7A2 /* Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = 45536D411B9E7405005EE7A2 /* Frame.m */; };
 		4578D3BE1B94A39E00D7C4DF /* SocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4578D3BD1B94A39E00D7C4DF /* SocketServer.m */; };
+		45CA15E01BAA5F0C001B79CD /* DOServerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CA15DF1BAA5F0C001B79CD /* DOServerProxy.m */; };
+		45CA5EBF1BA6684100275C82 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 45CA5EBE1BA6684100275C82 /* config.xml */; };
+		45CA5EC21BA67BAB00275C82 /* DOServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CA5EC11BA67BAB00275C82 /* DOServer.m */; };
+		45CA5ECC1BA688E200275C82 /* MainModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CA5ECB1BA688E200275C82 /* MainModule.m */; };
+		45D2C7F81BA26E290056BC0F /* BaseModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D2C7F71BA26E290056BC0F /* BaseModule.m */; };
+		45D2C7FB1BA2B5900056BC0F /* BaseConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D2C7FA1BA2B5900056BC0F /* BaseConfig.m */; };
+		45D2C7FF1BA2E4930056BC0F /* BleConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D2C7FE1BA2E4930056BC0F /* BleConfig.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,10 +55,21 @@
 		455017D51B8FEE7E00DEF975 /* CentralClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CentralClient.m; sourceTree = "<group>"; };
 		45536D401B9E7405005EE7A2 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
 		45536D411B9E7405005EE7A2 /* Frame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Frame.m; sourceTree = "<group>"; };
-		45536D461B9F05CA005EE7A2 /* CommonProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonProtocol.h; sourceTree = "<group>"; };
-		455573811BA121AE00FCC8B6 /* BleConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BleConfig.h; sourceTree = "<group>"; };
 		4578D3BC1B94A39E00D7C4DF /* SocketServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketServer.h; sourceTree = "<group>"; };
 		4578D3BD1B94A39E00D7C4DF /* SocketServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocketServer.m; sourceTree = "<group>"; };
+		45CA15DE1BAA5F0C001B79CD /* DOServerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOServerProxy.h; sourceTree = "<group>"; };
+		45CA15DF1BAA5F0C001B79CD /* DOServerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOServerProxy.m; sourceTree = "<group>"; };
+		45CA5EBE1BA6684100275C82 /* config.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		45CA5EC01BA67BAB00275C82 /* DOServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOServer.h; sourceTree = "<group>"; };
+		45CA5EC11BA67BAB00275C82 /* DOServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOServer.m; sourceTree = "<group>"; };
+		45CA5ECA1BA688E200275C82 /* MainModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainModule.h; sourceTree = "<group>"; };
+		45CA5ECB1BA688E200275C82 /* MainModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainModule.m; sourceTree = "<group>"; };
+		45D2C7F61BA26E290056BC0F /* BaseModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseModule.h; sourceTree = "<group>"; };
+		45D2C7F71BA26E290056BC0F /* BaseModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseModule.m; sourceTree = "<group>"; };
+		45D2C7F91BA2B5900056BC0F /* BaseConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseConfig.h; sourceTree = "<group>"; };
+		45D2C7FA1BA2B5900056BC0F /* BaseConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseConfig.m; sourceTree = "<group>"; };
+		45D2C7FD1BA2E4930056BC0F /* BleConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BleConfig.h; sourceTree = "<group>"; };
+		45D2C7FE1BA2E4930056BC0F /* BleConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BleConfig.m; sourceTree = "<group>"; };
 		45D41DEA1B9D4FF6001379D3 /* SocketProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SocketProtocol.h; path = ../SocketProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,6 +115,7 @@
 		454ED1941B8F024800F224DC /* SaentServiceDeamon */ = {
 			isa = PBXGroup;
 			children = (
+				45CA5EBE1BA6684100275C82 /* config.xml */,
 				455017CC1B8F5EAF00DEF975 /* Modules */,
 				454ED1C71B8F0F0800F224DC /* Framework */,
 				454ED1B61B8F06F800F224DC /* Resource */,
@@ -179,6 +198,7 @@
 		455017CC1B8F5EAF00DEF975 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				45CA5EC91BA688C800275C82 /* MainModule */,
 				455017D01B8F5FAB00DEF975 /* IModule */,
 				455017CF1B8F5F9000DEF975 /* ConfigModule */,
 				455017CE1B8F5F4700DEF975 /* SocketModule */,
@@ -194,7 +214,8 @@
 				455017D51B8FEE7E00DEF975 /* CentralClient.m */,
 				45536D401B9E7405005EE7A2 /* Frame.h */,
 				45536D411B9E7405005EE7A2 /* Frame.m */,
-				455573811BA121AE00FCC8B6 /* BleConfig.h */,
+				45D2C7FD1BA2E4930056BC0F /* BleConfig.h */,
+				45D2C7FE1BA2E4930056BC0F /* BleConfig.m */,
 			);
 			name = BLEModule;
 			sourceTree = "<group>";
@@ -205,6 +226,10 @@
 				45D41DEA1B9D4FF6001379D3 /* SocketProtocol.h */,
 				4578D3BC1B94A39E00D7C4DF /* SocketServer.h */,
 				4578D3BD1B94A39E00D7C4DF /* SocketServer.m */,
+				45CA5EC01BA67BAB00275C82 /* DOServer.h */,
+				45CA5EC11BA67BAB00275C82 /* DOServer.m */,
+				45CA15DE1BAA5F0C001B79CD /* DOServerProxy.h */,
+				45CA15DF1BAA5F0C001B79CD /* DOServerProxy.m */,
 			);
 			name = SocketModule;
 			sourceTree = "<group>";
@@ -212,6 +237,8 @@
 		455017CF1B8F5F9000DEF975 /* ConfigModule */ = {
 			isa = PBXGroup;
 			children = (
+				45D2C7F91BA2B5900056BC0F /* BaseConfig.h */,
+				45D2C7FA1BA2B5900056BC0F /* BaseConfig.m */,
 			);
 			name = ConfigModule;
 			sourceTree = "<group>";
@@ -219,9 +246,19 @@
 		455017D01B8F5FAB00DEF975 /* IModule */ = {
 			isa = PBXGroup;
 			children = (
-				45536D461B9F05CA005EE7A2 /* CommonProtocol.h */,
+				45D2C7F61BA26E290056BC0F /* BaseModule.h */,
+				45D2C7F71BA26E290056BC0F /* BaseModule.m */,
 			);
 			name = IModule;
+			sourceTree = "<group>";
+		};
+		45CA5EC91BA688C800275C82 /* MainModule */ = {
+			isa = PBXGroup;
+			children = (
+				45CA5ECA1BA688E200275C82 /* MainModule.h */,
+				45CA5ECB1BA688E200275C82 /* MainModule.m */,
+			);
+			name = MainModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,6 +341,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45CA5EBF1BA6684100275C82 /* config.xml in Resources */,
 				454ED19D1B8F024800F224DC /* Images.xcassets in Resources */,
 				454ED1A01B8F024800F224DC /* MainMenu.xib in Resources */,
 			);
@@ -323,11 +361,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45D2C7FB1BA2B5900056BC0F /* BaseConfig.m in Sources */,
 				454ED19B1B8F024800F224DC /* main.m in Sources */,
 				4578D3BE1B94A39E00D7C4DF /* SocketServer.m in Sources */,
+				45CA5EC21BA67BAB00275C82 /* DOServer.m in Sources */,
+				45D2C7F81BA26E290056BC0F /* BaseModule.m in Sources */,
 				455017D61B8FEE7E00DEF975 /* CentralClient.m in Sources */,
 				45536D421B9E7405005EE7A2 /* Frame.m in Sources */,
 				454ED1991B8F024800F224DC /* AppDelegate.m in Sources */,
+				45CA5ECC1BA688E200275C82 /* MainModule.m in Sources */,
+				45CA15E01BAA5F0C001B79CD /* DOServerProxy.m in Sources */,
+				45D2C7FF1BA2E4930056BC0F /* BleConfig.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

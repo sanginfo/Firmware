@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+
 #import "SocketProtocol.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, SocketProtocol>
@@ -25,21 +26,23 @@
 
 - (IBAction)discoverPeripherals:(id)sender;
 
-//- (IBAction)stopForPeripherals:(id)sender;
-
 - (IBAction)connectPeripheral:(id)sender;
 
-- (IBAction)discoverServices:(id)sender;
+//- (IBAction)disconnectPeripheral:(id)sender;
 
-- (IBAction)connectService:(id)sender;
+- (IBAction)readCharacteristic:(id)sender;
 
-- (IBAction)discoverCharacterics:(id)sender;
+- (IBAction)setTime:(id)sender;
 
-- (IBAction)subscribe:(id)sender;
+- (IBAction)startSession:(id)sender;
 
-- (IBAction)readValueOfCharacteristic:(id)sender;
+- (IBAction)stopSession:(id)sender;
+
+- (IBAction)requestResult:(id)sender;
 
 - (IBAction)configureSeantHWService:(id)sender;
+
+
 
 - (IBAction)startServer:(id)sender;
 

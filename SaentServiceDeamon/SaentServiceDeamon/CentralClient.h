@@ -12,13 +12,21 @@
 
 #import "Frame.h"
 
+#import "BaseModule.h"
+
+#import "BaseConfig.h"
+
+#pragma mark - delegate
+
 @protocol CentralClientDelegate;
 
-@interface CentralClient : NSObject
+#pragma mark - interface
+
+@interface CentralClient : BaseModule
+
+#pragma mark - properties
 
 @property(nonatomic, strong) NSString *peripheralUUID;
-
-@property (nonatomic, strong) NSString *serviceName;
 
 @property (nonatomic, strong) NSArray *serviceUUIDs;
 
@@ -28,53 +36,31 @@
 
 @property(nonatomic, strong) CBUUID *charactericticReceiveUUID;
 
-@property(nonatomic, strong) NSMutableArray *peripherals;
-
 @property (nonatomic, weak) id<CentralClientDelegate> delegate;
 
-- (id)initWithDelegate:(id<CentralClientDelegate>)delegate;
+@property(nonatomic) BOOL disconnected;
 
-- (void)discoverPeripherals;
+#pragma mark - methods
 
-- (void)connectPeripheral;
++ (id) getSingleton;
 
-- (void)disconnectPeripheral;
+- (void)centralClientDiscoverPeripherals;
 
-- (void)discoverServices;
+- (void)centralClientConnectPeripheral;
 
-- (void)connectService;
+- (void)centralClientDisconnectPeripheral;
 
-- (void)discoverCharacterics;
-
-- (void)subscribe;
-
-- (void)unsubscribe;
-
-- (void)readValueOfCharacteristic;
-
-- (void)configService;
+- (void)centralClientWriteCharacteristic: (uint8)typeCommand
+                       data: (NSData *)data;
 
 @end
 
 @protocol CentralClientDelegate <NSObject>
 
-- (void)centralClient:(CentralClient *)central
-       connectDidFail:(NSError *)error;
+- (void)centralClientDiscoverPeripheralResult: (NSMutableArray*)listPeripherals;
 
-- (void)centralClient:(CentralClient *)central
-requestForCharacteristic:(CBCharacteristic *)characteristic
-              didFail:(NSError *)error;
-
-- (void)centralClientDidConnect:(CentralClient *)central;
-- (void)centralClientDidDisconnect:(CentralClient *)central;
-
-- (void)centralClientDidSubscribe:(CentralClient *)central;
-- (void)centralClientDidUnsubscribe:(CentralClient *)central;
-
-- (void)centralClient:(CentralClient *)central
-       characteristic:(CBCharacteristic *)characteristic
-       didUpdateValue:(NSData *)value;
+- (void)centralClientSendResult: (UInt32)code
+                        message: (NSString*)message
+                      exception: (NSException*)exception;
 
 @end
-
-

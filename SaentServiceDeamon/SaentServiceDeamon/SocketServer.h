@@ -16,9 +16,9 @@
 
 @property(nonatomic) NSInteger port;
 
-@property(nonatomic, weak) id delegate;
-
 @property(nonatomic) NSInteger numOfWriting;
+
+@property(nonatomic, weak) id delegate;
 
 -(id)init:delegate;
 

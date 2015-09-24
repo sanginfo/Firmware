@@ -18,114 +18,96 @@ const uint8 CHECK_SUM_OFFSET = 6;
 
 const uint8 DATA_OFFSET = 8;
 
+static Frame *instance = nil;
+
+#pragma pack(1)
+typedef struct{
+    UInt16 type;
+    UInt16 length;
+    UInt16 frame;
+    UInt16 checksum;
+    Byte data[1];
+} SaentBLECmd;
+#pragma options align = reset
+
+
 @implementation Frame
 
-- (UInt16) bleBufferToUInt16:(UInt8 *)buffer{
-    
-    UInt8 uint16Buffer[2];
-    
-    if(CFByteOrderGetCurrent() == CFByteOrderBigEndian){
-        
-        uint16Buffer[0] = buffer[1];
-        
-        uint16Buffer[1] = buffer[0];
-        
-    }else{
-        
-        uint16Buffer[0] = buffer[0];
-        
-        uint16Buffer[1] = buffer[1];
-        
-    }
-    
-    return *((UInt16 *)(uint16Buffer));
-    
-}
 
-- (id)initWithData: (NSData *)data{
++ (id)getSingleton{
 
-    self = [super init];
+    @synchronized(self){
     
-    if(self){
-    
-        [self parseData:data];
+        if(instance == nil){
+        
+            instance = [[Frame alloc] init];
+            
+            instance.wFrameNumber = 0;
+        
+        }
+        
+        return instance;
     
     }
-    
-    return self;
 
 }
 
 - (void) parseData:(NSData*)bleFrameData{
-
-    UInt8 *buffer = (UInt8 *)[bleFrameData bytes];
+    SaentBLECmd* cmd = (SaentBLECmd*)[bleFrameData bytes];
     
-    self.type = [self bleBufferToUInt16:&buffer[TYPE_OFFSET]];
+    self.type = CFSwapInt16LittleToHost(cmd->type);
     
-    self.length = [self bleBufferToUInt16:&buffer[LENGTH_OFFSET]];
+    self.length = CFSwapInt16LittleToHost(cmd->length);
     
-    self.frameNumber = [self bleBufferToUInt16:&buffer[FRAME_OFFSET]];
+    self.frameNumber = CFSwapInt16LittleToHost(cmd->frame);
     
-    self.checkSum = [self bleBufferToUInt16:&buffer[CHECK_SUM_OFFSET]];
+    self.checkSum = CFSwapInt16LittleToHost(cmd->checksum);
     
-    self.data = [self bleBufferToUInt16:&buffer[DATA_OFFSET]];
+    self.data = CFSwapInt16LittleToHost(*((UInt16*)cmd->data));
     
 }
 
-- (void) detectCommand{
+- (NSString*) detectCommand{
+    
+    NSMutableString* command = [[NSMutableString alloc] init];
     
     if(self.type == INTERACTION_ONLINE) {
         
         NSLog(@"interacOnline");
         
-        switch (self.data) {
-                
-            case SWIPE_UP:{
-                
-                NSLog(@"swipe up");
-                
-            }
-                
-                break;
-                
-            case SWIPE_DOWN:{
-                
-                NSLog(@"swide down");
-                
-            }
-                
-                break;
-                
-            case SWIPE_LEFT:{
-            
-                NSLog(@"swide left");
-            
-            }
-                
-                break;
-                
-            case SWIPE_RIGHT:{
-            
-                NSLog(@"swipe right");
-                
-            }
-                
-                break;
-                
-            case CLICK:{
-            
-                NSLog(@"click");
-            
-            }
-                
-                break;
-                
-            default:
-                
-                break;
+        if(self.data == SWIPE_UP){
+        
+            [command appendFormat:@"SWIPE UP"];
+        
+        }
+        
+        if(self.data == SWIPE_DOWN){
+        
+            [command appendFormat:@"SWIPE DOWN"];
+        
+        }
+        
+        if(self.data == SWIPE_LEFT){
+        
+            [command appendFormat:@"SWIPE LEFT"];
+        
+        }
+        
+        if(self.data == SWIPE_RIGHT){
+        
+            [command appendFormat:@"SWIPE RIGHT"];
+        
+        }
+        
+        if(self.data == CLICK){
+        
+            [command appendFormat:@"CLICK"];
+        
         }
         
     }
+    
+    return (NSString*)command;
     
 }
 
@@ -133,59 +115,47 @@ const uint8 DATA_OFFSET = 8;
                      data: (NSData*)data{
     
     NSMutableData *command = [[NSMutableData alloc] init];
-
-    switch (typeCommand) {
-            
-        case SET_TIME: {
-            
-            NSLog(@"SET_TIME" );
-            
-            uint16 type = SET_TIME;
-            
-            uint16 typeSwap = CFSwapInt16HostToBig(type);
-            
-            [command appendBytes:&typeSwap length:sizeof(typeSwap)];
-            
-        }
-            
-            break;
-            
-        case START_SESSION: {
-            
-            NSLog(@"START_SESSION" );
-            
-            uint16 type = START_SESSION;
-            
-            uint16 typeSwap = CFSwapInt16HostToBig(type);
-            
-            [command appendBytes:&typeSwap length:sizeof(typeSwap)];
-            
-        }
-            
-            break;
-            
-        case STOP_SESSION: {
-            
-            NSLog(@"STOP_SESSION" );
-            
-            uint16 type = STOP_SESSION;
-            
-            uint16 typeSwap = CFSwapInt16HostToBig(type);
-            
-            [command appendBytes:&typeSwap length:sizeof(typeSwap)];
-            
-        }
+    
+    if(typeCommand == SET_TIME){
+    
+        NSLog(@"Frame: CreateCommand: SET_TIME" );
         
-            break;
-            
-        case REQUEST_RESULT:
-            
-            break;
-            
-        default:
-            
-            break;
-            
+        uint16 type = SET_TIME;
+        
+        uint16 typeSwap = CFSwapInt16HostToBig(type);
+        
+        [command appendBytes:&typeSwap length:sizeof(typeSwap)];
+    
+    }
+    
+    if(typeCommand == START_SESSION){
+    
+        NSLog(@"Frame: CreateCommand: START_SESSION" );
+        
+        uint16 type = START_SESSION;
+        
+        uint16 typeSwap = CFSwapInt16HostToBig(type);
+        
+        [command appendBytes:&typeSwap length:sizeof(typeSwap)];
+    
+    }
+    
+    if(typeCommand == STOP_SESSION){
+    
+        NSLog(@"Frame: CreateCommand: STOP_SESSION" );
+        
+        uint16 type = STOP_SESSION;
+        
+        uint16 typeSwap = CFSwapInt16HostToBig(type);
+        
+        [command appendBytes:&typeSwap length:sizeof(typeSwap)];
+    
+    }
+    
+    if(typeCommand == REQUEST_RESULT){
+    
+        NSLog(@"Frame: CreateCommand: NOT IMPLEMENT" );
+    
     }
     
     unsigned long sizeOfData = 0;
@@ -200,7 +170,9 @@ const uint8 DATA_OFFSET = 8;
     
     [command appendBytes:&sizeOfDataSwap length:sizeof(sizeOfDataSwap)];
     
-    uint16 frameNumber = 0;
+    uint16 frameNumber = self.wFrameNumber;
+    
+    self.wFrameNumber++;
     
     uint16 frameNumberSwap = CFSwapInt16HostToBig(frameNumber);
     
@@ -212,7 +184,11 @@ const uint8 DATA_OFFSET = 8;
     
     [command appendBytes:&checkSumSwap length:sizeof(checkSumSwap)];
     
-    [command appendData:data];
+    if(data != nil){
+        
+        [command appendData:data];
+        
+    }
     
     return command;
     

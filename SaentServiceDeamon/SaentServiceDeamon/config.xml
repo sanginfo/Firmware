@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<peripheral>
+    <uuid>0x123456789</uuid>
+    <config>
+        <swipeup>Crtl+U</swipeup>
+        <swipedown>Crtl+D</swipedown>
+        <swipeleft>Crtl+L</swipeleft>
+        <swiperight>Crtl+R</swiperight>
+        <click>Crtl+C</click>
+    </config>
+</peripheral>

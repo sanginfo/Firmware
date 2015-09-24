@@ -14,11 +14,15 @@
 
 @property(nonatomic) UInt16 type, length, frameNumber, checkSum, data;
 
+@property(nonatomic) UInt16 wFrameNumber;
+
 //@property(nonatomic) NSData *data;
 
-- (id)initWithData: (NSData *)frameData;
++ (id)getSingleton;
 
-- (void) detectCommand;
+- (void) parseData:(NSData*)bleFrameData;
+
+- (NSString*) detectCommand;
 
 - (NSData *)createCommand: (uint8)typeCommand
                    data: (NSData *)data;

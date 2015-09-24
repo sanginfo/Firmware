@@ -1,12 +1,12 @@
 //
-//  SocketServer.m
-//  SaentServiceDeamon
+//  SocketClient.m
+//  SaentClientModule
 //
-//  Created by APAC Builder on 8/31/15.
+//  Created by APAC Builder on 9/4/15.
 //  Copyright (c) 2015 APAC Builder. All rights reserved.
 //
 
-#import "SocketServer.h"
+#import "SocketClient.h"
 #import "AppKit/AppKit.h"
 
 CFReadStreamRef readStream;
@@ -15,17 +15,15 @@ CFWriteStreamRef writeStream;
 NSInputStream *inputStream;
 NSOutputStream *outputStream;
 
-@implementation SocketServer
+@implementation SocketClient
 
-- (id)init: delegate {
-    
+- (id) init:delegate{
+
     self = [super init];
     
     if(self){
         
         self.delegate = delegate;
-        
-        self.numOfWriting = 0;
         
     }
     
@@ -33,77 +31,13 @@ NSOutputStream *outputStream;
     
 }
 
--(void) setup{
+- (void) setup{
     
-    CFSocketRef TCPServer;
-        
-    char punchline[] = "To get to the order side!";
+    NSURL *url = [NSURL URLWithString:self.host];
     
-    int yes = 1;
+    NSLog(@"Setting up connection to %@: %li", [url absoluteString], self.port);
     
-    CFSocketContext CTX = {0, punchline, nil, nil, nil};
-    CTX.info = (__bridge void *)(self);
-    
-    TCPServer = CFSocketCreate(
-        kCFAllocatorDefault,
-        PF_LOCAL,
-        SOCK_STREAM,
-        IPPROTO_TCP,
-        kCFSocketAcceptCallBack,
-        (CFSocketCallBack)&AcceptCallBack,
-        &CTX
-    );
-    
-    if(TCPServer == NULL){
-        
-        NSLog(@"Server socket is not created");
-        
-        return;
-        
-    }else{
-        
-        NSLog(@"Server socket is created");
-        
-    }
-    
-    setsockopt(CFSocketGetNative(TCPServer), SOL_SOCKET, SO_REUSEADDR, (void*) &yes, sizeof(yes));
-    
-    struct sockaddr_in addr;
-    
-    memset(&addr, 0, sizeof(addr));
-    
-    addr.sin_len = sizeof(addr);
-    
-    addr.sin_family = AF_INET;
-    
-    addr.sin_port = htons(self.port);
-    
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    
-    NSData *address = [NSData dataWithBytes:&addr length:sizeof(addr)];
-    
-    if(CFSocketSetAddress(TCPServer, (CFDataRef)address) != kCFSocketSuccess){
-        
-        NSLog(@"CFSocketSetAddress() failed: %@ \n", stderr);
-        
-        CFRelease(TCPServer);
-        
-        return;
-    }
-    
-    CFRunLoopSourceRef sourceRef = CFSocketCreateRunLoopSource(kCFAllocatorDefault, TCPServer, 0);
-    
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), sourceRef, kCFRunLoopCommonModes);
-    
-    CFRelease(sourceRef);
-    
-}
-
-static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
-  
-    CFSocketNativeHandle sock = *(CFSocketNativeHandle *) data;
-    
-    CFStreamCreatePairWithSocket(kCFAllocatorDefault, sock, &readStream, &writeStream);
+    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)[url host], self.port, &readStream, &writeStream);
     
     if(!CFWriteStreamOpen(writeStream)){
         
@@ -113,13 +47,9 @@ static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFData
         
     }
     
-    SocketServer* socketServer = (__bridge SocketServer*)info;
-    
-    [socketServer open];
+    [self open];
     
     NSLog(@"Status of outputStream: %lu", [outputStream streamStatus]);
-    
-    return;
     
 }
 
@@ -207,9 +137,7 @@ static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFData
             
             if(stream == inputStream){
                 
-                self.numOfWriting++;
-                
-                NSLog(@"InputStream is ready %ld", self.numOfWriting);
+                NSLog(@"InputStream is ready");
                 
                 uint8_t buf[1024];
                 
@@ -226,6 +154,8 @@ static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFData
                     NSString* s = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
                     
                     [self readIn:s];
+                    
+                    //                    [data release];
                     
                 }
                 
@@ -257,8 +187,9 @@ static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (void) readIn:(NSString *)s{
     
-    [self.delegate appendChatMessage:[NSString stringWithFormat:@"%@", s]];
+    NSString *msg = [NSString stringWithFormat:@"%@", s];
     
+    [self.delegate appendChatMessage:[NSString stringWithFormat:@"%@", s]];
     
     
 }
@@ -271,16 +202,5 @@ static void AcceptCallBack(CFSocketRef socket, CFSocketCallBackType type, CFData
     
 }
 
-- (NSString *)getChatMessage{
-
-    return nil;
-    
-}
-
-- (void)appendChatMessage: (NSString *)message{
-
-
-
-}
 
 @end
